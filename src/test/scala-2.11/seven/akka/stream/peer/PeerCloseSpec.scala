@@ -24,7 +24,7 @@ class PeerCloseSpec extends FunSpecLike with BeforeAndAfterAll with FlowSpecSupp
 
   describe("Stream") {
     val streamSize = 10 * 1024 * 1024 + 1232
-    val clientNumber = 500
+    val clientNumber = 200
 
     it("should support multiple uploads and have same byte sizes on the downstream end") {
       import scala.concurrent.ExecutionContext.Implicits.global
