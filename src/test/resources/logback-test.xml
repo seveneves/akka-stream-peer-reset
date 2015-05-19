@@ -1,0 +1,24 @@
+<!--
+
+    Copyright © 2014-2015 XebiaLabs B.V. and its affiliates. Use is subject to terms of the enclosed Legal Notice.
+
+-->
+<configuration>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%.-20thread] %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+    <appender name="STDOUT_NO_PATTERN" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<root level="debug">
+		<appender-ref ref="STDOUT" />
+	</root>
+
+</configuration>
