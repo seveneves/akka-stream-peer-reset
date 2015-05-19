@@ -22,24 +22,24 @@ class PeerCloseSpec extends FunSpecLike with BeforeAndAfterAll with FlowSpecSupp
 
   implicit val config = PatienceConfig(timeout = Span(30, Seconds))
 
-  describe("File stream") {
-    val fileSize = 10 * 1024 * 1024 + 1232
+  describe("Stream") {
+    val streamSize = 10 * 1024 * 1024 + 1232
     val clientNumber = 300
 
-    it("should upload multiple files and have same byte sizes and checksums on the other end") {
+    it("should support multiple uploads and have same byte sizes on the downstream end") {
       import scala.concurrent.ExecutionContext.Implicits.global
       val allResults = 0 until clientNumber map (_ => Promise[Long]())
       val serverBinding = startServer(allResults)
-      def mockedFileInputStream = new GeneratingInputStream(1, fileSize)
+      def mockedFileInputStream = new GeneratingInputStream(1, streamSize)
       0 until clientNumber foreach { i=>
         val starter = Promise[Any]()
         startClient(serverBinding, starter.future, mockedFileInputStream)
-        info(s"Kicking $i")
+        println(s"Kicking $i")
         starter.success("")
       }
 
       whenReady(Future.sequence(allResults.map(_.future))) { all =>
-        all.foreach(_ shouldEqual fileSize)
+        all.foreach(_ shouldEqual streamSize)
       }
     }
   }
@@ -88,7 +88,6 @@ class PeerCloseSpec extends FunSpecLike with BeforeAndAfterAll with FlowSpecSupp
 
     clientSource(startOn, in).via(outgoingConnection).runWith(Sink.ignore)
   }
-
 
   def clientSource(startOn: Future[Any], inputStream: InputStream): Source[ByteString, _] = Source(startOn)
     .map(_ => InputStreamSource(() => inputStream))
