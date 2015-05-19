@@ -46,7 +46,7 @@ class PeerCloseSpec extends FunSpecLike with BeforeAndAfterAll with FlowSpecSupp
 
   def startServer(promises: Seq[Promise[Long]]): Tcp.ServerBinding = {
     val port = Random.nextInt(1000) + 35823
-    var index = 0
+    @volatile var index = 0
 
     val futureBinding = Tcp().bind(InetAddress.getLoopbackAddress.getHostAddress, port).to(Sink.foreach { connection =>
       Source.empty via connection.flow runWith sizeSink(promises(index))
