@@ -24,7 +24,7 @@ class PeerCloseSpec extends FunSpecLike with BeforeAndAfterAll with FlowSpecSupp
 
   describe("Stream") {
     val streamSize = 10 * 1024 * 1024 + 1232
-    val clientNumber = 300
+    val clientNumber = 500
 
     it("should support multiple uploads and have same byte sizes on the downstream end") {
       import scala.concurrent.ExecutionContext.Implicits.global
@@ -49,7 +49,7 @@ class PeerCloseSpec extends FunSpecLike with BeforeAndAfterAll with FlowSpecSupp
     @volatile var index = 0
 
     val futureBinding = Tcp().bind(InetAddress.getLoopbackAddress.getHostAddress, port).to(Sink.foreach { connection =>
-      Source.empty via connection.flow runWith sizeSink(promises(index))
+      Source.lazyEmpty via connection.flow runWith sizeSink(promises(index))
       index += 1
     }).run()
 
