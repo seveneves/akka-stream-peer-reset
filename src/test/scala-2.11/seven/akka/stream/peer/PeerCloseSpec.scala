@@ -2,6 +2,7 @@ package seven.akka.stream.peer
 
 import java.io.InputStream
 import java.net.InetAddress
+import java.util.concurrent.atomic.AtomicInteger
 
 import akka.stream.io.InputStreamSource
 import akka.stream.scaladsl.Tcp.{OutgoingConnection, ServerBinding}
@@ -46,11 +47,10 @@ class PeerCloseSpec extends FunSpecLike with BeforeAndAfterAll with FlowSpecSupp
 
   def startServer(promises: Seq[Promise[Long]]): Tcp.ServerBinding = {
     val port = Random.nextInt(1000) + 35823
-    @volatile var index = 0
+    val index = new AtomicInteger(0)
 
     val futureBinding = Tcp().bind(InetAddress.getLoopbackAddress.getHostAddress, port).to(Sink.foreach { connection =>
-      Source.lazyEmpty via connection.flow runWith sizeSink(promises(index))
-      index += 1
+      Source.lazyEmpty via connection.flow runWith sizeSink(promises(index.getAndIncrement))
     }).run()
 
     Await.result(futureBinding, 3.seconds)
